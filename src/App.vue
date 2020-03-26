@@ -1,28 +1,46 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div>
+        <todo-header/>
+        <section class="app-section my-5 container">
+            <todo-form class="todo-form" @submitTodo="addTodo"/>
+            <todo-list :todos="todos" class="w-100 my-5" @removeTodo="removeTodo" />
+        </section>
+    </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import {TodoHeader, TodoList, TodoForm} from "./components";
+import * as axios from "axios";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+    components: {
+        TodoHeader,
+        TodoList,
+        TodoForm
+    },
+    async beforeMount() {
+        const { data } = await axios.get("http://localhost:3000/todos");
+        // this.todos=data;
+        setTimeout(()=>this.todos=Object.freeze(data), 2000);
+    },
+    data() {
+        return {
+            todos: []
+        }
+    },
+    methods: {
+        addTodo(todo) {
+            this.todos.push(todo);
+        },
+        removeTodo(index) {
+            this.todos.splice(index,1);
+        }
+    }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.app-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 </style>
